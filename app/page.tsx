@@ -11,6 +11,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<string | null>(null)
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleFileSelect = async (file: File) => {
     setIsLoading(true)
     // Simulate API call to process the file
