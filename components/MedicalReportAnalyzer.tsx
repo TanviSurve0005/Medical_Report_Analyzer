@@ -34,6 +34,7 @@ export default function MedicalReportAnalyzer() {
         onAnalyze={handleAnalyze}
         analysisMethod={analysisMethod}
         setAnalysisMethod={setAnalysisMethod}
+        setIsAnalyzing={setIsAnalyzing}
       />
 
       {showResults && <ResultsCard />}
