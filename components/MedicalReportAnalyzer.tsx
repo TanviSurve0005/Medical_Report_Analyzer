@@ -4,19 +4,19 @@ import { useState } from "react";
 import { Stethoscope } from "lucide-react";
 import AnalysisSteps from "./AnalysisSteps";
 import UploadCard from "./UploadCard";
-import ResultsCard from "./ResultsCard";
+// import ResultsCard from "./ResultsCard";
 
 export default function MedicalReportAnalyzer() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  const [analysisMethod, setAnalysisMethod] = useState<"url" | "upload">("url");
+  // const [showResults, setShowResults] = useState(false);
+  const [analysisMethod, setAnalysisMethod] = useState<"url" | "upload">("upload");
 
   const handleAnalyze = async () => {
     setIsAnalyzing(true);
     // Simulate analysis
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setIsAnalyzing(false);
-    setShowResults(true);
+    // setShowResults(true);
   };
 
   return (
@@ -37,7 +37,7 @@ export default function MedicalReportAnalyzer() {
         setIsAnalyzing={setIsAnalyzing}
       />
 
-      {showResults && <ResultsCard />}
+      {/* {showResults && <ResultsCard />} */}
     </div>
   );
 }

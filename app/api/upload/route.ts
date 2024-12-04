@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
     // Process the file with LlamaParseReader
     const reader = new LlamaParseReader({ resultType: "markdown" });
     const documents = await reader.loadData(filepath);
+    console.log({documents})
 
     // Delete the file after processing
     await unlink(filepath);
