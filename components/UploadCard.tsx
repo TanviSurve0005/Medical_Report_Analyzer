@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import ResultsCard from "./ResultsCard"; // Import ResultsCard component
 
 interface UploadCardProps {
   isAnalyzing: boolean;
@@ -31,6 +32,7 @@ export default function UploadCard({
 }: UploadCardProps) {
   const [fileUrl, setFileUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [analysisResult, setAnalysisResult] = useState(null); // State to hold analysis result
   const { toast } = useToast();
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -82,6 +84,7 @@ export default function UploadCard({
           title: "File processed successfully",
           description: "Your medical report has been analyzed.",
         });
+        setAnalysisResult(result); // Set analysis result for rendering in ResultsCard
         onAnalyze();
       } catch (error) {
         console.error("Error:", error);
@@ -99,114 +102,123 @@ export default function UploadCard({
     }
   };
 
-  return (
-    <Card className="max-w-2xl mx-auto mb-8 bg-white shadow-lg">
-      <CardHeader>
-        <CardTitle className="text-green-700">
-          Upload Your Medical Report
-        </CardTitle>
-        <CardDescription>
-          Upload your medical report file or provide a URL for analysis
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          <Tabs
-            value={analysisMethod}
-            onValueChange={(value) =>
-              setAnalysisMethod(value as "url" | "upload")
-            }
-            className="w-full"
-          >
-            <TabsList className="grid w-full grid-cols-2 bg-green-100">
-              <TabsTrigger
-                value="url"
-                className="data-[state=active]:bg-white data-[state=active]:text-green-700"
-              >
-                URL
-              </TabsTrigger>
-              <TabsTrigger
-                value="upload"
-                className="data-[state=active]:bg-white data-[state=active]:text-green-700"
-              >
-                Upload
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="url">
-              <div className="flex space-x-2">
-                <Input
-                  placeholder="Enter report URL"
-                  type="url"
-                  value={fileUrl}
-                  onChange={(e) => setFileUrl(e.target.value)}
-                  className="flex-1 border-green-200 focus:ring-green-500"
-                />
-              </div>
-            </TabsContent>
-            <TabsContent value="upload">
-              <div
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onClick={() => document.getElementById("file-upload")?.click()}
-                className="border-2 border-dashed border-green-200 rounded-lg p-8 text-center cursor-pointer transition-colors hover:bg-green-50"
-              >
-                {file ? (
-                  <div className="flex items-center justify-center space-x-2">
-                    <FileText className="w-8 h-8 text-green-600" />
-                    <span className="text-green-700 font-medium">
-                      {file.name}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeFile();
-                      }}
-                    >
-                      <X className="w-4 h-4 text-green-700" />
-                    </Button>
-                  </div>
-                ) : (
-                  <>
-                    <Upload className="w-8 h-8 mx-auto mb-4 text-green-400" />
-                    <p className="text-sm text-gray-600">
-                      Drag and drop your file here, or click to select
-                    </p>
-                  </>
-                )}
-                <input
-                  type="file"
-                  className="hidden"
-                  accept=".pdf,.jpg,.png,.jpeg"
-                  id="file-upload"
-                  onChange={handleFileChange}
-                />
-              </div>
-            </TabsContent>
-          </Tabs>
-          <Button
-            className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white"
-            disabled={
-              isAnalyzing || (analysisMethod === "url" ? !fileUrl : !file)
-            }
-          >
-            {isAnalyzing ? (
-              <>
-                <Activity className="mr-2 h-4 w-4 animate-spin" />
-                Analyzing...
-              </>
-            ) : (
-              <>
-                <FileText className="mr-2 h-4 w-4" />
-                Analyze Report
-              </>
-            )}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
-  );
+ return (
+   <>
+     <Card className="max-w-2xl mx-auto mb-8 bg-white shadow-lg">
+       <CardHeader>
+         <CardTitle className="text-green-700">
+           Upload Your Medical Report
+         </CardTitle>
+         <CardDescription>
+           Upload your medical report file or provide a URL for analysis
+         </CardDescription>
+       </CardHeader>
+       <CardContent>
+         <form onSubmit={handleSubmit}>
+           <Tabs
+             value={analysisMethod}
+             onValueChange={(value) =>
+               setAnalysisMethod(value as "url" | "upload")
+             }
+             className="w-full"
+           >
+             <TabsList className="grid w-full grid-cols-2 bg-green-100">
+               <TabsTrigger
+                 value="url"
+                 className="data-[state=active]:bg-white data-[state=active]:text-green-700"
+               >
+                 URL
+               </TabsTrigger>
+               <TabsTrigger
+                 value="upload"
+                 className="data-[state=active]:bg-white data-[state=active]:text-green-700"
+               >
+                 Upload
+               </TabsTrigger>
+             </TabsList>
+             <TabsContent value="url">
+               <div className="flex space-x-2">
+                 <Input
+                   placeholder="Enter report URL"
+                   type="url"
+                   value={fileUrl}
+                   onChange={(e) => setFileUrl(e.target.value)}
+                   className="flex-1 border-green-200 focus:ring-green-500"
+                 />
+               </div>
+             </TabsContent>
+             <TabsContent value="upload">
+               <div
+                 onDrop={handleDrop}
+                 onDragOver={handleDragOver}
+                 onClick={() => document.getElementById("file-upload")?.click()}
+                 className="border-2 border-dashed border-green-200 rounded-lg p-8 text-center cursor-pointer transition-colors hover:bg-green-50"
+               >
+                 {file ? (
+                   <div className="flex items-center justify-center space-x-2">
+                     <FileText className="w-8 h-8 text-green-600" />
+                     <span className="text-green-700 font-medium">
+                       {file.name}
+                     </span>
+                     <Button
+                       type="button"
+                       variant="ghost"
+                       size="icon"
+                       className="rounded-full"
+                       onClick={(e) => {
+                         e.stopPropagation();
+                         removeFile();
+                       }}
+                     >
+                       <X className="w-4 h-4 text-green-700" />
+                     </Button>
+                   </div>
+                 ) : (
+                   <>
+                     <Upload className="w-8 h-8 mx-auto mb-4 text-green-400" />
+                     <p className="text-sm text-gray-600">
+                       Drag and drop your file here, or click to select
+                     </p>
+                   </>
+                 )}
+                 <input
+                   type="file"
+                   className="hidden"
+                   accept=".pdf,.jpg,.png,.jpeg"
+                   id="file-upload"
+                   onChange={handleFileChange}
+                 />
+               </div>
+             </TabsContent>
+           </Tabs>
+           <Button
+             className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white"
+             disabled={
+               isAnalyzing || (analysisMethod === "url" ? !fileUrl : !file)
+             }
+           >
+             {isAnalyzing ? (
+               <>
+                 <Activity className="mr-2 h-4 w-4 animate-spin" />
+                 Analyzing...
+               </>
+             ) : (
+               <>
+                 <FileText className="mr-2 h-4 w-4" />
+                 Analyze Report
+               </>
+             )}
+           </Button>
+         </form>
+       </CardContent>
+     </Card>
+
+     {analysisResult && (
+       <div className="max-w-2xl mx-auto mb-8 bg-white shadow-lg">
+         <ResultsCard analysisResult={analysisResult} />
+       </div>
+     )}
+   </>
+ );
+
 }

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { writeFile, unlink } from "fs/promises";
 import { join } from "path";
 import { LlamaParseReader } from "llamaindex";
-// import formidable from "formidable";
+import { processMedicalReport } from "@/lib/groq-service";
 
 export const config = {
   api: {
@@ -18,13 +18,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const filename = file.name.replace(/\s/g, "-");
-  const filepath = join("/tmp", filename);
-
   try {
+    // Save file temporarily
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const filename = file.name.replace(/\s/g, "-");
+    const filepath = join("/tmp", filename);
+
     await writeFile(filepath, buffer);
-    console.log("File saved to", filepath);
 
     // Process the file with LlamaParseReader
     const reader = new LlamaParseReader({ resultType: "markdown" });
@@ -32,9 +32,15 @@ export async function POST(req: NextRequest) {
 
     // Delete the file after processing
     await unlink(filepath);
-    console.log("File deleted:", filepath);
 
-    return NextResponse.json({ success: true, documents });
+    // Process the medical report
+    const processedReport = await processMedicalReport(documents);
+    console.log({processedReport});
+
+    return NextResponse.json({
+      success: true,
+      report: processedReport,
+    });
   } catch (error) {
     console.error("Error processing file:", error);
     return NextResponse.json(
