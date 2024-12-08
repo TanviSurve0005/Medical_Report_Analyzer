@@ -10,6 +10,29 @@ const groq = new Groq({
 export async function processMedicalReport(documents: any[]) {
   const documentText = documents.map((doc) => doc.text).join("\n");
   console.log({ documentText });
+
+  // Check if documentText contains medical terminology or relevant information
+  const medicalKeywords = [
+    "blood",
+    "test",
+    "diagnosis",
+    "report",
+    "health",
+    "scan",
+    "medical",
+    "doctor",
+  ];
+  const containsMedicalContent = medicalKeywords.some((keyword) =>
+    documentText.toLowerCase().includes(keyword)
+  );
+
+  if (!containsMedicalContent) {
+    return {
+      originalDocument: documentText,
+      analysis: "Please provide a proper medical report for analysis.",
+    };
+  }
+
   try {
     const chatCompletion = await groq.chat.completions.create({
       messages: [
