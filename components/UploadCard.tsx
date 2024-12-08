@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import ResultsCard from "./ResultsCard"; // Import ResultsCard component
+import ResultsCard from "./ResultsCard";
 
 interface UploadCardProps {
   isAnalyzing: boolean;
@@ -32,7 +32,7 @@ export default function UploadCard({
 }: UploadCardProps) {
   const [fileUrl, setFileUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
-  const [analysisResult, setAnalysisResult] = useState(null); // State to hold analysis result
+  const [analysisResult, setAnalysisResult] = useState(null);
   const { toast } = useToast();
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -74,23 +74,28 @@ export default function UploadCard({
           body: formData,
         });
 
+        const result = await response.json();
+        console.log({ result });
+
         if (!response.ok) {
-          throw new Error("File upload failed");
+          throw new Error(result.error || "File upload failed");
         }
 
-        const result = await response.json();
-        console.log("File processed:", result);
+        console.log({ result });
         toast({
           title: "File processed successfully",
           description: "Your medical report has been analyzed.",
         });
-        setAnalysisResult(result); // Set analysis result for rendering in ResultsCard
+        setAnalysisResult(result);
         onAnalyze();
       } catch (error) {
-        console.error("Error:", error);
+        console.log("Error:", error);
         toast({
           title: "Error",
-          description: "There was a problem processing your file.",
+          description:
+            error instanceof Error
+              ? error.message
+              : "There was a problem processing your file.",
           variant: "destructive",
         });
       } finally {
@@ -121,7 +126,7 @@ export default function UploadCard({
                 setAnalysisMethod(value as "url" | "upload")
               }
               className="w-full"
-             >
+            >
               <TabsList className="grid w-full grid-cols-2 bg-green-100">
                 <TabsTrigger
                   value="upload"
@@ -167,8 +172,14 @@ export default function UploadCard({
                   ) : (
                     <>
                       <Upload className="w-8 h-8 mx-auto mb-4 text-green-400" />
-                      <p className="text-sm text-gray-600">
-                        Drag and drop your file here, or click to select
+                      <p className="text-base text-gray-700 font-medium flex flex-col">
+                        Drag and drop files here, or click to select files.
+                        <span className="text-gray-700">
+                          You can upload a file up to 15 MB.
+                        </span>
+                        <span className="text-sm text-gray-500 mt-1">
+                          Supported file types: PDF, JPEG, PNG.
+                        </span>
                       </p>
                     </>
                   )}
@@ -193,6 +204,15 @@ export default function UploadCard({
                 </div>
               </TabsContent>
             </Tabs>
+
+            {/* Tooltip for better file quality */}
+            <div className="relative mt-2">
+              <span className="text-sm text-gray-500 mt-1">
+                For better analysis, please upload clear and high-quality files.
+                Avoid blurry or incomplete documents.
+              </span>
+            </div>
+
             <Button
               className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white"
               disabled={

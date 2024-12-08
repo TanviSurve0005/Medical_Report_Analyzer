@@ -8,15 +8,16 @@ import UploadCard from "./UploadCard";
 
 export default function MedicalReportAnalyzer() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  // const [showResults, setShowResults] = useState(false);
-  const [analysisMethod, setAnalysisMethod] = useState<"url" | "upload">("upload");
+
+  const [analysisMethod, setAnalysisMethod] = useState<"url" | "upload">(
+    "upload"
+  );
 
   const handleAnalyze = async () => {
     setIsAnalyzing(true);
-    // Simulate analysis
+
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setIsAnalyzing(false);
-    // setShowResults(true);
   };
 
   return (
@@ -36,8 +37,6 @@ export default function MedicalReportAnalyzer() {
         setAnalysisMethod={setAnalysisMethod}
         setIsAnalyzing={setIsAnalyzing}
       />
-
-      {/* {showResults && <ResultsCard />} */}
     </div>
   );
 }

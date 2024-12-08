@@ -29,15 +29,25 @@ export async function POST(req: NextRequest) {
     // Process the file with LlamaParseReader
     const reader = new LlamaParseReader({ resultType: "markdown" });
     const documents = await reader.loadData(filepath);
-    console.log({documents})
+    console.log("here is doc", documents)
 
     // Delete the file after processing
     await unlink(filepath);
 
+    // Check if documents are empty or contain "NO_CONTENT_HERE"
+    if (
+      !documents ||
+      documents.length === 0 ||
+      documents[0].text === "NO_CONTENT_HERE"
+    ) {
+      return NextResponse.json(
+        { error: "No content found in the document" },
+        { status: 400 }
+      );
+    }
+console.log("pointer here coming")
     // Process the medical report
     const processedReport = await processMedicalReport(documents);
-    console.log({processedReport});
-
     return NextResponse.json({
       success: true,
       report: processedReport,
