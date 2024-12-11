@@ -4,6 +4,13 @@ This is a web app designed to analyze medical reports, such as PDFs and images, 
 
 <img width="1850" alt="Xnapper-2024-12-08-19 00 55" src="https://github.com/user-attachments/assets/15bc863f-e3a6-4715-85a5-8032ea13b265">
 
+## Live Demo
+
+
+https://github.com/user-attachments/assets/eed34700-f8c2-4710-b08b-b6956f6da994
+
+
+
 ## Features
 
 - Upload medical reports in PDF or image formats.
