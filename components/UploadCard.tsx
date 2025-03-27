@@ -18,7 +18,7 @@ import ResultsCard from "./ResultsCard";
 interface UploadCardProps {
   isAnalyzing: boolean;
   setIsAnalyzing: (isAnalyzing: boolean) => void;
-  onAnalyze: () => void;
+  onAnalyze: (result: any) => void; // Updated to accept result parameter
   analysisMethod: "url" | "upload";
   setAnalysisMethod: (method: "url" | "upload") => void;
 }
@@ -87,7 +87,7 @@ export default function UploadCard({
           description: "Your medical report has been analyzed.",
         });
         setAnalysisResult(result);
-        onAnalyze();
+        onAnalyze(result); // Pass the result to onAnalyze
       } catch (error) {
         console.log("Error:", error);
         toast({
@@ -103,7 +103,7 @@ export default function UploadCard({
       }
     } else if (analysisMethod === "url" && fileUrl) {
       // Handle URL analysis here
-      onAnalyze();
+      onAnalyze({}); // Pass empty object for URL analysis
     }
   };
 
@@ -205,7 +205,6 @@ export default function UploadCard({
               </TabsContent>
             </Tabs>
 
-            {/* Tooltip for better file quality */}
             <div className="relative mt-2">
               <span className="text-sm text-gray-500 mt-1">
                 For better analysis, please upload clear and high-quality files.
