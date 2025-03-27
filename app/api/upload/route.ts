@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, unlink } from "fs/promises";
+import { writeFile, unlink, mkdir } from "fs/promises";
 import { join } from "path";
+import { tmpdir } from "os"; // Add this import
 import { LlamaParseReader } from "llamaindex";
 import { processMedicalReport } from "@/lib/groq-service";
 
@@ -19,33 +20,36 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // Get system temp directory (works across platforms)
+    const tempDir = tmpdir();
+    // Create a unique filename
+    const filename = `${Date.now()}-${file.name.replace(/\s/g, "-")}`;
+    const filepath = join(tempDir, filename);
+
+    // Ensure temp directory exists
+    await mkdir(tempDir, { recursive: true });
+
     // Save file temporarily
     const buffer = Buffer.from(await file.arrayBuffer());
-    const filename = file.name.replace(/\s/g, "-");
-    const filepath = join("/tmp", filename);
-
     await writeFile(filepath, buffer);
 
     // Process the file with LlamaParseReader
     const reader = new LlamaParseReader({ resultType: "markdown" });
     const documents = await reader.loadData(filepath);
-    console.log("here is doc", documents)
 
     // Delete the file after processing
-    await unlink(filepath);
+    await unlink(filepath).catch(err => 
+      console.error("Error deleting temp file:", err)
+    );
 
-    // Check if documents are empty or contain "NO_CONTENT_HERE"
-    if (
-      !documents ||
-      documents.length === 0 ||
-      documents[0].text === "NO_CONTENT_HERE"
-    ) {
+    // Check if documents are empty
+    if (!documents || documents.length === 0 || documents[0].text === "NO_CONTENT_HERE") {
       return NextResponse.json(
         { error: "No content found in the document" },
         { status: 400 }
       );
     }
-console.log("pointer here coming")
+
     // Process the medical report
     const processedReport = await processMedicalReport(documents);
     return NextResponse.json({
