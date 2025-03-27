@@ -84,7 +84,6 @@ export default function ResultsCard({ analysisResult }: ResultsCardProps) {
         </CardHeader>
 
         <CardContent className="p-8 space-y-8">
-          {/* Medical Parameters Section */}
           <section>
             <h2 className="text-xl font-semibold text-green-800 mb-6 flex items-center">
               <ClipboardList className="w-6 h-6 mr-3 text-green-600" />
@@ -142,7 +141,7 @@ export default function ResultsCard({ analysisResult }: ResultsCardProps) {
           <section>
             <h2 className="text-xl font-semibold text-green-800 mb-6 flex items-center">
               <Heart className="w-6 h-6 mr-3 text-green-600" />
-              Detailed Analysis
+              Detailed Analysis Of Report
             </h2>
             <div className="prose prose-green max-w-full text-green-800 space-y-4">
               <ReactMarkdown
